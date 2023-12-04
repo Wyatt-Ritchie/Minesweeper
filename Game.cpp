@@ -12,6 +12,7 @@
 #include "TitleText.h"
 #include "TextBox.h"
 #include "Button.h"
+#include "GameBoard.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -46,7 +47,7 @@ bool Game::Initialize()
 
 	// create a window
 	mWindow = SDL_CreateWindow(
-		"2D-Game Engine", // Window Title
+		"Minesweeper", // Window Title
 		100, // Top left x-coordinate of window
 		100, // top left y-coordinate of window
 		mScreenWidth, // width of window
@@ -371,12 +372,11 @@ void Game::LoadData()
 	ui->SetFont(font);
 	const std::string name = "Button";
 	
-	ui->LoadSelectedTex("Assets/blue_brick.png");
-	ui->LoadUnSelectedTex("Assets/red_brick.png");
+	ui->LoadSelectedTex("Assets/unclick_hover.png");
+	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
 	ui->AddButton(name, &foo);
 
-	Actor* actor = new Actor(this);
-	TileMapComponent* tc = new TileMapComponent(actor, 100);
+	GameBoard* gameBoard = new GameBoard(this, 6, Vector2(15, 15));
 }
 
 void Game::UnloadData()
