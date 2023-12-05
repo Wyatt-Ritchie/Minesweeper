@@ -82,6 +82,8 @@ private:
 
 	// UI screen stack for the game
 	std::vector<class UIScreen*> mUIStack;
+
+	class GameBoard* mGameBoard;
 	
 	bool mUpdatingActors;
 	bool DrawCalled;

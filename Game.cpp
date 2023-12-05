@@ -115,6 +115,8 @@ void Game::ProcessInput()
 			{
 				mUIStack.back()->HandleKeyPress(event.button.button);
 			}
+
+			mGameBoard->HandleKeyPress(event.button.button);
 		}
 	}
 
@@ -132,6 +134,8 @@ void Game::ProcessInput()
 		actor->ProcessInput(state);
 	}
 	mUpdatingActors = false;
+
+	mGameBoard->ProcessInput(state);
 
 	// Process input for UI screens
 	for (auto& ui : mUIStack)
@@ -209,6 +213,12 @@ void Game::UpdateGame()
 		delete actor;
 	}
 
+	// Update the game board
+	if (mGameBoard->GetState() == GameBoard::InProgress)
+	{
+		mGameBoard->Update(deltaTime);
+	}
+
 	for (auto ui : mUIStack)
 	{
 		if (ui->GetState() == UIScreen::EActive)
@@ -240,6 +250,11 @@ void Game::GenerateOutput()
 	for (auto sprite : mSprites)
 	{
 		sprite->Draw(mRenderer);
+	}
+
+	if (mGameBoard->GetState() == GameBoard::InProgress)
+	{
+		mGameBoard->Draw(mRenderer);
 	}
 
 	// Render the games active UI screens
@@ -366,17 +381,17 @@ void Game::LoadData()
 
 	
 
-	Font* font = new Font(this);
+	/*Font* font = new Font(this);
 	font->Load("Assets/Caviar_Dreams_Bold.ttf");
 	UIScreen* ui = new UIScreen(this);
 	ui->SetFont(font);
 	const std::string name = "Button";
 	
-	ui->LoadSelectedTex("Assets/unclick_hover.png");
+	ui->LoadSelectedTex("Assets/Mine.png");
 	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
-	ui->AddButton(name, &foo);
+	ui->AddButton(name, &foo);*/
 
-	GameBoard* gameBoard = new GameBoard(this, 6, Vector2(15, 15));
+	mGameBoard = new GameBoard(this, 6, Vector2(15, 15));
 }
 
 void Game::UnloadData()

@@ -11,6 +11,8 @@ struct BoardTile {
 	Vector2 gridPosition;
 	bool mine = false;
 	int numAdjacentMines = 0;
+	bool highlighted = false;
+	bool clicked = false;
 };
 
 class GameBoard
@@ -38,6 +40,8 @@ public:
 
 	void SetUpBoard();
 
+	bool ContainsPoint(const Vector2& pt, BoardTile bt) const;
+
 private:
 
 	State mState;
@@ -50,8 +54,12 @@ private:
 	// This map contains the texture for the numbers 1-8
 	std::unordered_map<int, SDL_Texture*> mNumbers;
 
+	std::vector<BoardTile> mBoardTiles;
+
 	// The texture for the mine
 	SDL_Texture* mMine;
+
+	const Vector2 mPosition;
 
 	const Vector2 mGridSize;
 
