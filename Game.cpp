@@ -252,10 +252,10 @@ void Game::GenerateOutput()
 		sprite->Draw(mRenderer);
 	}
 
-	if (mGameBoard->GetState() == GameBoard::InProgress)
-	{
-		mGameBoard->Draw(mRenderer);
-	}
+	
+	
+	mGameBoard->Draw(mRenderer);
+	
 
 	// Render the games active UI screens
 	for (auto ui : mUIStack)
@@ -391,7 +391,7 @@ void Game::LoadData()
 	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
 	ui->AddButton(name, &foo);*/
 
-	mGameBoard = new GameBoard(this, 6, Vector2(15, 15));
+	mGameBoard = new GameBoard(this, 6, Vector2(5, 5));
 }
 
 void Game::UnloadData()

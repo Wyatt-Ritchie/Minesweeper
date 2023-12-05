@@ -1,5 +1,6 @@
 #include "GameBoard.h"
 #include "Game.h"
+#include <unordered_set>
 
 GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 																  ,mState(InProgress)
@@ -57,6 +58,12 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 		{
 			e.tileTexture = mTileTextures["Unclicked"];
 		}
+
+		if (e.clicked && e.mine)
+		{
+			e.tileTexture = mTileTextures["Explosion"];
+		}
+
 		SDL_Rect r;
 		r.w = 32;
 		r.h = 32;
@@ -70,6 +77,18 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 			0.0,
 			nullptr,
 			SDL_FLIP_NONE);
+
+		if (e.clicked && e.mine)
+		{
+			SDL_RenderCopyEx(renderer,
+				e.mineTexture,
+				nullptr,
+				&r,
+				0.0,
+				nullptr,
+				SDL_FLIP_NONE);
+		}
+
 	}
 
 }
@@ -114,7 +133,7 @@ void GameBoard::HandleKeyPress(const int key)
 	switch (key)
 	{
 	case SDL_BUTTON_LEFT:
-		if (!mBoardTiles.empty())
+		if (!mBoardTiles.empty() && mState == InProgress)
 		{
 			for (auto& t : mBoardTiles)
 			{
@@ -123,6 +142,10 @@ void GameBoard::HandleKeyPress(const int key)
 					// Change the texture to clicked, and call the search algo
 					t.clicked = true;
 					t.tileTexture = mTileTextures["Clicked"];
+					if (t.mine)
+					{
+						SetState(Lost);
+					}
 					break;
 				}
 			}
@@ -149,6 +172,21 @@ void GameBoard::SetUpBoard()
 			t.gridPosition = Vector2(i * 32+16, j * 32+16);
 			t.tileTexture = mTileTextures["Unclicked"];
 			mBoardTiles.push_back(t);
+		}
+	}
+
+	std::unordered_set<int> mineLoc;
+	int minesUnused = mNumMines;
+	int n = 0;
+	while(minesUnused > 0)
+	{
+		n = (rand() % static_cast<int>(mGridSize.x * mGridSize.y));
+		if (mineLoc.count(n) < 1)
+		{
+			mineLoc.emplace(n);
+			--minesUnused;
+			mBoardTiles[n].mine = true;
+			mBoardTiles[n].mineTexture = mMine;
 		}
 	}
 }
