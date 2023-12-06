@@ -9,11 +9,19 @@ GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 																  ,mPosition(Vector2(0.0f,0.0f))
 {
 	mMine = mGame->GetTexture("Assets/Mine.png");
-
+	mFlag = mGame->GetTexture("Assets/Flag.png");
 	mTileTextures.emplace("Clicked", mGame->GetTexture("Assets/clicked_tile.png"));
 	mTileTextures.emplace("Unclicked", mGame->GetTexture("Assets/unclicked_tile.png"));
 	mTileTextures.emplace("Unclicked_Hover", mGame->GetTexture("Assets/unclick_hover.png"));
 	mTileTextures.emplace("Explosion", mGame->GetTexture("Assets/Explosion.png"));
+	mNumbers.emplace(1, mGame->GetTexture("Assets/Numbers/1.png"));
+	mNumbers.emplace(2, mGame->GetTexture("Assets/Numbers/2.png"));
+	mNumbers.emplace(3, mGame->GetTexture("Assets/Numbers/3.png"));
+	mNumbers.emplace(4, mGame->GetTexture("Assets/Numbers/4.png"));
+	mNumbers.emplace(5, mGame->GetTexture("Assets/Numbers/5.png"));
+	mNumbers.emplace(6, mGame->GetTexture("Assets/Numbers/6.png"));
+	mNumbers.emplace(7, mGame->GetTexture("Assets/Numbers/7.png"));
+	mNumbers.emplace(8, mGame->GetTexture("Assets/Numbers/8.png"));
 
 	// add the number textures when I get around to making them
 
@@ -78,7 +86,30 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 			nullptr,
 			SDL_FLIP_NONE);
 
-		if (e.clicked && e.mine)
+		if (e.numberTexture && !e.mine)
+		{
+			SDL_RenderCopyEx(renderer,
+				e.numberTexture,
+				nullptr,
+				&r,
+				0.0,
+				nullptr,
+				SDL_FLIP_NONE);
+		}
+		
+
+		if (e.flagTexture)
+		{
+			SDL_RenderCopyEx(renderer,
+				e.flagTexture,
+				nullptr,
+				&r,
+				0.0,
+				nullptr,
+				SDL_FLIP_NONE);
+		}
+
+		if (mState == Lost)
 		{
 			SDL_RenderCopyEx(renderer,
 				e.mineTexture,
@@ -137,11 +168,12 @@ void GameBoard::HandleKeyPress(const int key)
 		{
 			for (auto& t : mBoardTiles)
 			{
-				if (t.highlighted == true && t.clicked == false)
+				if (t.highlighted == true && t.clicked == false && !t.flagged)
 				{
 					// Change the texture to clicked, and call the search algo
 					t.clicked = true;
 					t.tileTexture = mTileTextures["Clicked"];
+					CheckSurroundingTiles(t);
 					if (t.mine)
 					{
 						SetState(Lost);
@@ -151,6 +183,30 @@ void GameBoard::HandleKeyPress(const int key)
 			}
 		}
 		break;
+	case SDL_BUTTON_RIGHT:
+		if (!mBoardTiles.empty() && mState == InProgress)
+		{
+			for (auto& t : mBoardTiles)
+			{
+				if (t.highlighted && !t.clicked)
+				{
+					if (t.flagged)
+					{
+						t.flagged = false;
+						t.flagTexture = nullptr;
+						mNumFlags--;
+					}
+					else
+					{
+						t.flagged = true;
+						t.flagTexture = mFlag;
+						mNumFlags++;
+					}
+					break;
+				}
+				
+			}
+		}
 	default:
 		break;
 	}
@@ -180,7 +236,7 @@ void GameBoard::SetUpBoard()
 	int n = 0;
 	while(minesUnused > 0)
 	{
-		n = (rand() % static_cast<int>(mGridSize.x * mGridSize.y));
+		n = std::rand() % static_cast<int>(mGridSize.x * mGridSize.y);
 		if (mineLoc.count(n) < 1)
 		{
 			mineLoc.emplace(n);
@@ -188,5 +244,47 @@ void GameBoard::SetUpBoard()
 			mBoardTiles[n].mine = true;
 			mBoardTiles[n].mineTexture = mMine;
 		}
+	}
+}
+
+void GameBoard::CheckSurroundingTiles(BoardTile& t)
+{
+	int row, col, mineCount;
+	row = t.gridPosition.x;
+	col = t.gridPosition.y;
+	mineCount = 0;
+	for (auto& e : mBoardTiles)
+	{
+		//  Corners
+		if ((static_cast<int>(e.gridPosition.x) == row - 32 || static_cast<int>(e.gridPosition.x) == row + 32)
+			&& (static_cast<int>(e.gridPosition.y) == col -32 || static_cast<int>(e.gridPosition.y) == col + 32))
+		{
+			if (e.mine)
+			{
+				mineCount++;
+			}
+		}
+		// vertical
+		if ((static_cast<int>(e.gridPosition.x) == row)
+			&& (static_cast<int>(e.gridPosition.y) == col - 32 || static_cast<int>(e.gridPosition.y) == col + 32))
+		{
+			if (e.mine)
+			{
+				mineCount++;
+			}
+		}
+		// horizontal
+		if ((static_cast<int>(e.gridPosition.x) == row - 32 || static_cast<int>(e.gridPosition.x) == row + 32)
+			&& (static_cast<int>(e.gridPosition.y) == col))
+		{
+			if (e.mine)
+			{
+				mineCount++;
+			}
+		}
+	}
+	if (mineCount > 0)
+	{
+		t.numberTexture = mNumbers[mineCount];
 	}
 }

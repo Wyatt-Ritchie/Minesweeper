@@ -8,11 +8,13 @@ struct BoardTile {
 	SDL_Texture* tileTexture = nullptr;
 	SDL_Texture* numberTexture = nullptr;
 	SDL_Texture* mineTexture = nullptr;
+	SDL_Texture* flagTexture = nullptr;
 	Vector2 gridPosition;
 	bool mine = false;
 	int numAdjacentMines = 0;
 	bool highlighted = false;
 	bool clicked = false;
+	bool flagged = false;
 };
 
 class GameBoard
@@ -40,6 +42,8 @@ public:
 
 	void SetUpBoard();
 
+	void CheckSurroundingTiles(BoardTile& t);
+
 	bool ContainsPoint(const Vector2& pt, BoardTile bt) const;
 
 private:
@@ -59,10 +63,14 @@ private:
 	// The texture for the mine
 	SDL_Texture* mMine;
 
+	SDL_Texture* mFlag;
+
 	const Vector2 mPosition;
 
 	const Vector2 mGridSize;
 
 	const int mNumMines;
+
+	int mNumFlags;
 };
 
