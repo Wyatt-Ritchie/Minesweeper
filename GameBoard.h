@@ -1,10 +1,11 @@
 #pragma once
 #include "SDL.h"
-#include "unordered_map"
-#include"Math.h"
+#include <unordered_map>
+#include "Math.h"
 #include <string>
 
 struct BoardTile {
+	int id;
 	SDL_Texture* tileTexture = nullptr;
 	SDL_Texture* numberTexture = nullptr;
 	SDL_Texture* mineTexture = nullptr;
@@ -15,6 +16,9 @@ struct BoardTile {
 	bool highlighted = false;
 	bool clicked = false;
 	bool flagged = false;
+	bool operator==(const BoardTile& other) const {
+		return id == other.id;
+	}
 };
 
 class GameBoard
@@ -42,9 +46,13 @@ public:
 
 	void SetUpBoard();
 
-	void CheckSurroundingTiles(BoardTile& t);
+	bool ContainsPoint(const Vector2& pt, BoardTile& bt) const;
 
-	bool ContainsPoint(const Vector2& pt, BoardTile bt) const;
+	void GenerateGraph(std::vector<BoardTile>& tiles);
+
+	void ClearSpace(BoardTile& t);
+
+	void printAdjacencyList();
 
 private:
 
@@ -57,6 +65,9 @@ private:
 
 	// This map contains the texture for the numbers 1-8
 	std::unordered_map<int, SDL_Texture*> mNumbers;
+
+	// The adjacency list
+	std::unordered_map<int, std::vector<BoardTile>> mBoardGraph;
 
 	std::vector<BoardTile> mBoardTiles;
 
