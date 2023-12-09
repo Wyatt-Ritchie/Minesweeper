@@ -36,7 +36,12 @@ GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 
 GameBoard::~GameBoard() 
 {
+	for (auto& t : mBoardTiles)
+	{
+		delete t;
+	}
 
+	mBoardTiles.clear();
 }
 
 void GameBoard::Update(const float deltaTime)
@@ -62,19 +67,19 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 	// Iterate through each tile, and draw it's texture, and the number/mine on the tile
 	for (auto& e : mBoardTiles)
 	{
-		Vector2 posOffset = startPos + e.gridPosition;
-		if (e.highlighted && !e.clicked)
+		Vector2 posOffset = startPos + e->gridPosition;
+		if (e->highlighted && !e->clicked)
 		{
-			e.tileTexture = mTileTextures["Unclicked_Hover"];
+			e->tileTexture = mTileTextures["Unclicked_Hover"];
 		}
-		else if(!e.clicked)
+		else if(!e->clicked)
 		{
-			e.tileTexture = mTileTextures["Unclicked"];
+			e->tileTexture = mTileTextures["Unclicked"];
 		}
 
-		if (e.clicked && e.mine)
+		if (e->clicked && e->mine)
 		{
-			e.tileTexture = mTileTextures["Explosion"];
+			e->tileTexture = mTileTextures["Explosion"];
 		}
 
 		SDL_Rect r;
@@ -84,17 +89,17 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 		r.y = (int)posOffset.y - 32 / 2;
 
 		SDL_RenderCopyEx(renderer,
-			e.tileTexture,
+			e->tileTexture,
 			nullptr,
 			&r,
 			0.0,
 			nullptr,
 			SDL_FLIP_NONE);
 
-		if (e.numberTexture && !e.mine)
+		if (e->numberTexture && !e->mine && e->clicked)
 		{
 			SDL_RenderCopyEx(renderer,
-				e.numberTexture,
+				e->numberTexture,
 				nullptr,
 				&r,
 				0.0,
@@ -103,10 +108,10 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 		}
 		
 
-		if (e.flagTexture)
+		if (e->flagTexture)
 		{
 			SDL_RenderCopyEx(renderer,
-				e.flagTexture,
+				e->flagTexture,
 				nullptr,
 				&r,
 				0.0,
@@ -117,7 +122,7 @@ void GameBoard::Draw(SDL_Renderer* renderer)
 		if (mState == Lost)
 		{
 			SDL_RenderCopyEx(renderer,
-				e.mineTexture,
+				e->mineTexture,
 				nullptr,
 				&r,
 				0.0,
@@ -142,12 +147,12 @@ void GameBoard::ProcessInput(const uint8_t* keys)
 		{
 			if (ContainsPoint(mousePos, e))
 			{
-				e.highlighted = true;
+				e->highlighted = true;
 
 			}
 			else
 			{
-				e.highlighted = false;
+				e->highlighted = false;
 			}
 		}
 
@@ -155,81 +160,102 @@ void GameBoard::ProcessInput(const uint8_t* keys)
 	}
 }
 
-bool GameBoard::ContainsPoint(const Vector2& pt, BoardTile& bt) const
+bool GameBoard::ContainsPoint(const Vector2& pt, BoardTile* bt) const
 {
-	bool no = pt.x < (bt.gridPosition.x - 32 / 2.0f) ||
-		pt.x >(bt.gridPosition.x + 32 / 2.0f) ||
-		pt.y < (bt.gridPosition.y - 32 / 2.0f) ||
-		pt.y >(bt.gridPosition.y + 32 / 2.0f);
+	bool no = pt.x < (bt->gridPosition.x - 32 / 2.0f) ||
+		pt.x >(bt->gridPosition.x + 32 / 2.0f) ||
+		pt.y < (bt->gridPosition.y - 32 / 2.0f) ||
+		pt.y >(bt->gridPosition.y + 32 / 2.0f);
 	return !no;
 }
 
-void GameBoard::GenerateGraph(std::vector<BoardTile>& tiles) {
+void GameBoard::GenerateGraph(std::vector<BoardTile*> tiles) {
 
-	for (BoardTile& tile : tiles) {
-		if (!tile.mine) 
+	for (BoardTile* tile : tiles) {
+		if (!tile->mine) 
 		{ // Consider only tiles with mine=false
 			// Add the adjacent tiles to the adjacency list
 			int row, col;
-			row = tile.gridPosition.x;
-			col = tile.gridPosition.y;
+			row = tile->gridPosition.x;
+			col = tile->gridPosition.y;
 			for (auto& e : mBoardTiles)
 			{
 				if (!(tile == e))
 				{
 					//  Corners
-					if ((static_cast<int>(e.gridPosition.x) == row - 32 || static_cast<int>(e.gridPosition.x) == row + 32)
-						&& (static_cast<int>(e.gridPosition.y) == col - 32 || static_cast<int>(e.gridPosition.y) == col + 32))
+					if ((static_cast<int>(e->gridPosition.x) == row - 32 || static_cast<int>(e->gridPosition.x) == row + 32)
+						&& (static_cast<int>(e->gridPosition.y) == col - 32 || static_cast<int>(e->gridPosition.y) == col + 32))
 					{
-						mBoardGraph[tile.id].push_back(e);
-						if (e.mine)
+						mBoardGraph[tile->id].push_back(e);
+						if (e->mine)
 						{
-							tile.numAdjacentMines++;
+							tile->numAdjacentMines++;
 						}
 					}
 					// vertical
-					if ((static_cast<int>(e.gridPosition.x) == row)
-						&& (static_cast<int>(e.gridPosition.y) == col - 32 || static_cast<int>(e.gridPosition.y) == col + 32))
+					if ((static_cast<int>(e->gridPosition.x) == row)
+						&& (static_cast<int>(e->gridPosition.y) == col - 32 || static_cast<int>(e->gridPosition.y) == col + 32))
 					{
-						mBoardGraph[tile.id].push_back(e);
-						if (e.mine)
+						mBoardGraph[tile->id].push_back(e);
+						if (e->mine)
 						{
-							tile.numAdjacentMines++;
+							tile->numAdjacentMines++;
 						}
 					}
 					// horizontal
-					if ((static_cast<int>(e.gridPosition.x) == row - 32 || static_cast<int>(e.gridPosition.x) == row + 32)
-						&& (static_cast<int>(e.gridPosition.y) == col))
+					if ((static_cast<int>(e->gridPosition.x) == row - 32 || static_cast<int>(e->gridPosition.x) == row + 32)
+						&& (static_cast<int>(e->gridPosition.y) == col))
 					{
-						mBoardGraph[tile.id].push_back(e);
-						if (e.mine)
+						mBoardGraph[tile->id].push_back(e);
+						if (e->mine)
 						{
-							tile.numAdjacentMines++;
+							tile->numAdjacentMines++;
 						}
 					}
 				}
 				
 			}
+			tile->numberTexture = mNumbers[tile->numAdjacentMines];
 		}
 		else
 		{
-			mBoardGraph[tile.id];
+			mBoardGraph[tile->id];
 		}
 	}
 }
 
-void GameBoard::ClearSpace(BoardTile& t)
+void GameBoard::ClearSpace(BoardTile* t)
 {
-	// TODO:
-	// Implement this function
+	if (t->numAdjacentMines != 0 || t->mine) return;
+
+	std::vector<BoardTile*> visited;
+	std::vector<BoardTile*> unvisited;
+
+	visited.push_back(t);
+
+	for (auto& tile : mBoardGraph[t->id])
+	{
+		if (std::find(visited.begin(), visited.end(), tile) == visited.end() && !tile->mine)
+		{
+			tile->clicked = true;
+			tile->tileTexture = mTileTextures["Clicked"];
+			unvisited.push_back(tile);
+		}
+	}
+	while (!unvisited.empty())
+	{
+		unvisited.pop_back();
+	}
+
+	
 }
 
 void GameBoard::printAdjacencyList() {
 	if (mBoardGraph.empty()) SDL_Log("no graph");
 	for (const auto& t : mBoardGraph) {
 		std::cout << "Tile id (" << t.first << ") is adjacent to: ";
-		for (const BoardTile& neighbor : t.second) {
-			std::cout << "(" << neighbor.id << ") ";
+		for (const BoardTile* neighbor : t.second) {
+			std::cout << "(" << neighbor->id << ") ";
 		}
 		std::cout << std::endl;
 	}
@@ -244,18 +270,18 @@ void GameBoard::HandleKeyPress(const int key)
 		{
 			for (auto& t : mBoardTiles)
 			{
-				if (t.highlighted == true && t.clicked == false && !t.flagged)
+				if (t->highlighted == true && t->clicked == false && !t->flagged)
 				{
 					// Change the texture to clicked, and call the search algo
-					t.clicked = true;
-					t.tileTexture = mTileTextures["Clicked"];
+					t->clicked = true;
+					t->tileTexture = mTileTextures["Clicked"];
 					ClearSpace(t);
-					if (t.numAdjacentMines > 0)
+					if (t->numAdjacentMines > 0)
 					{
-						t.numberTexture = mNumbers[t.numAdjacentMines];
+						t->numberTexture = mNumbers[t->numAdjacentMines];
 					}
 					
-					if (t.mine)
+					if (t->mine)
 					{
 						SetState(Lost);
 					}
@@ -269,18 +295,18 @@ void GameBoard::HandleKeyPress(const int key)
 		{
 			for (auto& t : mBoardTiles)
 			{
-				if (t.highlighted && !t.clicked)
+				if (t->highlighted && !t->clicked)
 				{
-					if (t.flagged)
+					if (t->flagged)
 					{
-						t.flagged = false;
-						t.flagTexture = nullptr;
+						t->flagged = false;
+						t->flagTexture = nullptr;
 						mNumFlags--;
 					}
 					else
 					{
-						t.flagged = true;
-						t.flagTexture = mFlag;
+						t->flagged = true;
+						t->flagTexture = mFlag;
 						mNumFlags++;
 					}
 					break;
@@ -305,10 +331,10 @@ void GameBoard::SetUpBoard()
 	{
 		for (int j = 0; j < cols; j++)
 		{
-			BoardTile t;
-			t.id = id;
-			t.gridPosition = Vector2(j * 32+16, i * 32+16);
-			t.tileTexture = mTileTextures["Unclicked"];
+			BoardTile* t = new BoardTile;
+			t->id = id;
+			t->gridPosition = Vector2(j * 32+16, i * 32+16);
+			t->tileTexture = mTileTextures["Unclicked"];
 			mBoardTiles.push_back(t);
 			++id;
 		}
@@ -324,8 +350,8 @@ void GameBoard::SetUpBoard()
 		{
 			mineLoc.emplace(n);
 			--minesUnused;
-			mBoardTiles[n].mine = true;
-			mBoardTiles[n].mineTexture = mMine;
+			mBoardTiles[n]->mine = true;
+			mBoardTiles[n]->mineTexture = mMine;
 		}
 	}
 }

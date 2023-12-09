@@ -16,8 +16,8 @@ struct BoardTile {
 	bool highlighted = false;
 	bool clicked = false;
 	bool flagged = false;
-	bool operator==(const BoardTile& other) const {
-		return id == other.id;
+	bool operator==(const BoardTile* other) const {
+		return id == other->id;
 	}
 };
 
@@ -46,11 +46,11 @@ public:
 
 	void SetUpBoard();
 
-	bool ContainsPoint(const Vector2& pt, BoardTile& bt) const;
+	bool ContainsPoint(const Vector2& pt, BoardTile* bt) const;
 
-	void GenerateGraph(std::vector<BoardTile>& tiles);
+	void GenerateGraph(std::vector<BoardTile*> tiles);
 
-	void ClearSpace(BoardTile& t);
+	void ClearSpace(BoardTile* t);
 
 	void printAdjacencyList();
 
@@ -67,9 +67,9 @@ private:
 	std::unordered_map<int, SDL_Texture*> mNumbers;
 
 	// The adjacency list
-	std::unordered_map<int, std::vector<BoardTile>> mBoardGraph;
+	std::unordered_map<int, std::vector<BoardTile*>> mBoardGraph;
 
-	std::vector<BoardTile> mBoardTiles;
+	std::vector<BoardTile*> mBoardTiles;
 
 	// The texture for the mine
 	SDL_Texture* mMine;
