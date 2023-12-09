@@ -1,7 +1,7 @@
 #include "GameBoard.h"
 #include "Game.h"
 #include <iostream>
-#include <functional>
+#include <stack>
 #include <unordered_set>
 
 GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
@@ -228,26 +228,39 @@ void GameBoard::ClearSpace(BoardTile* t)
 {
 	if (t->numAdjacentMines != 0 || t->mine) return;
 
-	std::vector<BoardTile*> visited;
-	std::vector<BoardTile*> unvisited;
-
-	visited.push_back(t);
+	std::stack<BoardTile*> unvisited;
 
 	for (auto& tile : mBoardGraph[t->id])
 	{
-		if (std::find(visited.begin(), visited.end(), tile) == visited.end() && !tile->mine)
+		if (!tile->clicked && !tile->mine)
 		{
 			tile->clicked = true;
 			tile->tileTexture = mTileTextures["Clicked"];
-			unvisited.push_back(tile);
+			unvisited.push(tile);
 		}
 	}
 	while (!unvisited.empty())
 	{
-		unvisited.pop_back();
-	}
 
-	
+		std::vector<BoardTile*> adjTiles = mBoardGraph[unvisited.top()->id];
+		if (unvisited.top()->numAdjacentMines > 0)
+		{
+			unvisited.pop();
+		}
+		else
+		{
+			unvisited.pop();
+			for (auto& tile : adjTiles)
+			{
+				if (!tile->clicked && !tile->mine)
+				{
+					tile->clicked = true;
+					tile->tileTexture = mTileTextures["Clicked"];
+					unvisited.push(tile);
+				}
+			}
+		}
+	}
 }
 
 void GameBoard::printAdjacencyList() {

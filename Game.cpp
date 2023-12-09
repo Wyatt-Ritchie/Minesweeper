@@ -391,7 +391,7 @@ void Game::LoadData()
 	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
 	ui->AddButton(name, &foo);*/
 
-	mGameBoard = new GameBoard(this, 6, Vector2(10, 10));
+	mGameBoard = new GameBoard(this, 20, Vector2(15, 15));
 }
 
 void Game::UnloadData()
