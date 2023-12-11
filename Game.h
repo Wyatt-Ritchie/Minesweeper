@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include "Math.h"
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -29,14 +30,22 @@ public:
 	SDL_Renderer* GetRenderer() const { return mRenderer; }
 	class AudioSystem* GetAudioSystem() { return mAudioSystem; }
 
+	void ResizeWindow(Vector2 size);
+
 	// Return entire UI stack by reference
 	const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; };
 
 	// Push specified UIScreen onto stack
 	void PushUI(class UIScreen* screen);
 
+	void SetGameBoard(class GameBoard* board) { mGameBoard = board; }
+	GameBoard* GetGameBoard() const { return mGameBoard; }
+
 	int GetScreenHeight() const { return mScreenHeight; }
 	int GetScreenWidth() const { return mScreenWidth; }
+
+	void SetScreenHeight(int height) { mScreenHeight = height; }
+	void SetScreenWidth(int width) { mScreenWidth = width; }
 
 	//shutdown game loop
 	void ShutDown();

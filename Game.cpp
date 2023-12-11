@@ -2,9 +2,9 @@
 #include "Actor.h"
 #include "SpriteComponent.h"
 #include "TileMapComponent.h"
+#include "GameUI.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
-#include "Math.h"
 #include "Font.h"
 #include "BGSpriteComponent.h"
 #include "AudioSystem.h"
@@ -50,9 +50,9 @@ bool Game::Initialize()
 		"Minesweeper", // Window Title
 		100, // Top left x-coordinate of window
 		100, // top left y-coordinate of window
-		mScreenWidth, // width of window
-		mScreenHeight, // height of window
-		0 // flags (0 for no flags set)
+		0, // width of window
+		0, // height of window
+		SDL_WINDOW_RESIZABLE // flags (0 for no flags set)
 	);
 
 	// check that window was created. Otherwise send error message
@@ -367,6 +367,13 @@ Font* Game::GetFont(const std::string& fileName)
 
 }
 
+void Game::ResizeWindow(Vector2 size)
+{
+	SDL_SetWindowSize(mWindow,
+		static_cast<int>(size.x),
+		static_cast<int>(size.y));
+}
+
 void Game::LoadData()
 {
 	// Set temp background 
@@ -391,7 +398,8 @@ void Game::LoadData()
 	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
 	ui->AddButton(name, &foo);*/
 
-	mGameBoard = new GameBoard(this, 20, Vector2(15, 15));
+	//mGameBoard = new GameBoard(this, 25, Vector2(15, 15));
+	GameUI* ui = new GameUI(this);
 }
 
 void Game::UnloadData()

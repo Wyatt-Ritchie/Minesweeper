@@ -164,8 +164,8 @@ bool GameBoard::ContainsPoint(const Vector2& pt, BoardTile* bt) const
 {
 	bool no = pt.x < (bt->gridPosition.x - 32 / 2.0f) ||
 		pt.x >(bt->gridPosition.x + 32 / 2.0f) ||
-		pt.y < (bt->gridPosition.y - 32 / 2.0f) ||
-		pt.y >(bt->gridPosition.y + 32 / 2.0f);
+		pt.y < (bt->gridPosition.y - 32 / 2.0f + mPosition.y) ||
+		pt.y >(bt->gridPosition.y + 32 / 2.0f + mPosition.y);
 	return !no;
 }
 

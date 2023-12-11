@@ -54,6 +54,10 @@ public:
 
 	void printAdjacencyList();
 
+	void SetPosition(Vector2 vec) { mPosition = vec; }
+
+	Vector2 GetPosition() const { return mPosition; }
+
 private:
 
 	State mState;
@@ -76,7 +80,7 @@ private:
 
 	SDL_Texture* mFlag;
 
-	const Vector2 mPosition;
+	Vector2 mPosition;
 
 	const Vector2 mGridSize;
 
