@@ -9,7 +9,7 @@ UIScreen::UIScreen(Game* game) : mGame(game)
 								,mTitle(nullptr)
 								,mTitlePos(Vector2::Zero)
 								,mState(EActive)
-								,mNextButtonPos(Vector2(334, 334))
+								,mNextButtonPos(Vector2(0, 0))
 {
 	game->PushUI(this);
 }
@@ -126,9 +126,9 @@ void UIScreen::AddButton(const std::string& name, std::function<void()> onClick)
 	dims.y = static_cast<float>(b);
 	
 
-	/*Button* button = new Button(name, mFont, onClick, mNextButtonPos, dims);
+	Button* button = new Button(name, mFont, onClick, mNextButtonPos, dims);
 	mNextButtonPos.y -= b + 20;
-	mButtons.emplace_back(button);*/
+	mButtons.emplace_back(button);
 }
 
 void UIScreen::LoadSelectedTex(const std::string path)

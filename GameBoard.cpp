@@ -31,7 +31,7 @@ GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 	// call SetUp board funcition
 	SetUpBoard();
 	GenerateGraph(mBoardTiles);
-	printAdjacencyList();
+	//printAdjacencyList();
 }
 
 GameBoard::~GameBoard() 
@@ -261,6 +261,23 @@ void GameBoard::ClearSpace(BoardTile* t)
 			}
 		}
 	}
+}
+
+void GameBoard::ResetGame(const int mines, const Vector2 dims)
+{
+	for (auto& t : mBoardTiles)
+	{
+		delete t;
+	}
+
+	mBoardTiles.clear();
+
+	mNumMines = mines;
+	mGridSize = dims;
+	mState = InProgress;
+	SetUpBoard();
+	GenerateGraph(mBoardTiles);
+
 }
 
 void GameBoard::printAdjacencyList() {

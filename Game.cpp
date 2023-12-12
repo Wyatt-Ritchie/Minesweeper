@@ -252,10 +252,7 @@ void Game::GenerateOutput()
 		sprite->Draw(mRenderer);
 	}
 
-	
-	
 	mGameBoard->Draw(mRenderer);
-	
 
 	// Render the games active UI screens
 	for (auto ui : mUIStack)

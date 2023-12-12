@@ -84,6 +84,8 @@ void Button::Draw(SDL_Texture* tex, SDL_Renderer* renderer)
 		SetName(mName);
 	}
 
+	if (mName == "") return;
+
 	SDL_Rect dstRect;
 	dstRect.w = mNameTexWidth;
 	dstRect.h = mNameTexHeight;

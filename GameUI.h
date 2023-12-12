@@ -16,6 +16,8 @@ public:
 
 	void ButtonSettings();
 
+	void GenerateButtons();
+
 	State GetState() const { return mState; }
 	void SetState(State state) { mState = state; }
 

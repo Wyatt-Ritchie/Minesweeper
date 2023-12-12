@@ -52,6 +52,8 @@ public:
 
 	void ClearSpace(BoardTile* t);
 
+	void ResetGame(const int mines, const Vector2 dims);
+
 	void printAdjacencyList();
 
 	void SetPosition(Vector2 vec) { mPosition = vec; }
@@ -82,9 +84,9 @@ private:
 
 	Vector2 mPosition;
 
-	const Vector2 mGridSize;
+	Vector2 mGridSize;
 
-	const int mNumMines;
+	int mNumMines;
 
 	int mNumFlags;
 };
