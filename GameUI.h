@@ -14,21 +14,20 @@ public:
 
 	void ButtonResetGame();
 
-	void ButtonSettings();
+	void SetEasy();
 
 	void GenerateButtons();
 
 	State GetState() const { return mState; }
-	void SetState(State state) { mState = state; }
+	void SetMedium();
+	void SetHard();
+	void SetState(State state);
+
+	void SetHeaderDims(Vector2 dims) { mHeaderDims = dims; }
 
 private:
 	State mState;
-	class Button* mResetButton;
-
-	class Button* mSettings;
-
 	Vector2 mHeaderDims;
 
 	class GameBoard* mGameBoard;
 };
-

@@ -31,6 +31,15 @@ UIScreen::~UIScreen()
 	{
 		SDL_DestroyTexture(mButtonUnSelected);
 	}
+
+	if (!mButtons.empty())
+	{
+		for (auto& b : mButtons)
+		{
+			delete b;
+		}
+		mButtons.clear();
+	}
 }
 
 void UIScreen::Update(float deltaTime)
@@ -127,7 +136,7 @@ void UIScreen::AddButton(const std::string& name, std::function<void()> onClick)
 	
 
 	Button* button = new Button(name, mFont, onClick, mNextButtonPos, dims);
-	mNextButtonPos.y -= b + 20;
+	mNextButtonPos.y += b + 10;
 	mButtons.emplace_back(button);
 }
 

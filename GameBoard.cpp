@@ -277,6 +277,7 @@ void GameBoard::ResetGame(const int mines, const Vector2 dims)
 	mState = InProgress;
 	SetUpBoard();
 	GenerateGraph(mBoardTiles);
+	mGame->ResizeWindow(Vector2(dims.x * 32, (2 * 32) + (dims.y * 32)));
 
 }
 

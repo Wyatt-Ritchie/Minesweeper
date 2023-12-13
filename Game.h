@@ -49,6 +49,8 @@ public:
 
 	//shutdown game loop
 	void ShutDown();
+
+	class GameUI* gui;
 private:
 
 	// helper functions for the game loop
@@ -93,6 +95,7 @@ private:
 	std::vector<class UIScreen*> mUIStack;
 
 	class GameBoard* mGameBoard;
+	
 	
 	bool mUpdatingActors;
 	bool DrawCalled;

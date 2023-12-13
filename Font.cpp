@@ -39,7 +39,11 @@ void Font::Unload()
 {
 	for (auto& font : mFontData)
 	{
-		TTF_CloseFont(font.second);
+		if (font.second)
+		{
+			TTF_CloseFont(font.second);
+		}
+		
 	}
 }
 

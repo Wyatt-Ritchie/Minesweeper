@@ -22,7 +22,8 @@ Game::Game() : mWindow(nullptr),
 			   mUpdatingActors(false),
 			   mAudioSystem(nullptr),
 			   mScreenHeight(768),
-	           mScreenWidth(1024)
+	           mScreenWidth(1024),
+			   gui(nullptr)
 {
 	DrawCalled = false;
 }
@@ -52,7 +53,7 @@ bool Game::Initialize()
 		100, // top left y-coordinate of window
 		0, // width of window
 		0, // height of window
-		SDL_WINDOW_RESIZABLE // flags (0 for no flags set)
+		0 // flags (0 for no flags set)
 	);
 
 	// check that window was created. Otherwise send error message
@@ -226,11 +227,14 @@ void Game::UpdateGame()
 			ui->Update(deltaTime);
 		}
 	}
-	for(auto ui : mUIStack)
+	for (auto ui : mUIStack)
+	{
 		if (ui->GetState() == UIScreen::EClosing)
 		{
 			delete ui;
 		}
+	}
+		
 
 }
 
@@ -382,21 +386,8 @@ void Game::LoadData()
 	* 4. Get textures, then set textures.
 	* 5. Optional if there are more than one background repeat and set scroll speeds if desired.
 	*/
-
+	gui = new GameUI(this);
 	
-
-	/*Font* font = new Font(this);
-	font->Load("Assets/Caviar_Dreams_Bold.ttf");
-	UIScreen* ui = new UIScreen(this);
-	ui->SetFont(font);
-	const std::string name = "Button";
-	
-	ui->LoadSelectedTex("Assets/Mine.png");
-	ui->LoadUnSelectedTex("Assets/unclicked_tile.png");
-	ui->AddButton(name, &foo);*/
-
-	//mGameBoard = new GameBoard(this, 25, Vector2(15, 15));
-	GameUI* ui = new GameUI(this);
 }
 
 void Game::UnloadData()
@@ -423,7 +414,7 @@ void Game::UnloadData()
 		mUIStack.pop_back();
 	}
 	mFonts.clear();
-	
+
 	delete mGameBoard;
 
 }
