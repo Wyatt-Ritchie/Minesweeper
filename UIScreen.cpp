@@ -52,15 +52,15 @@ void UIScreen::Draw(SDL_Renderer* renderer)
 	// Iterate through mButtons and draw each button
 	if (!mButtons.empty())
 	{
-		for (auto const & b : mButtons)
+		for (auto const& b : mButtons)
 		{
 			if (b->GetHighlighted())
 			{
-				b->Draw(mButtonSelected, renderer);
+				b->Draw(b->GetSelected(), renderer);
 			}
 			else
 			{
-				b->Draw(mButtonUnSelected, renderer);
+				b->Draw(b->GetUnSelected(), renderer);
 			}
 		}
 	}

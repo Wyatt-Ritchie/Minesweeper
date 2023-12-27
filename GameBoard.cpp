@@ -1,7 +1,7 @@
 #include "GameBoard.h"
 #include "Game.h"
 #include <iostream>
-#include <stack>
+#include <queue>
 #include <unordered_set>
 
 GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
@@ -31,7 +31,6 @@ GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 	// call SetUp board funcition
 	SetUpBoard();
 	GenerateGraph(mBoardTiles);
-	//printAdjacencyList();
 }
 
 GameBoard::~GameBoard() 
@@ -42,6 +41,10 @@ GameBoard::~GameBoard()
 	}
 
 	mBoardTiles.clear();
+	mBoardGraph.clear();
+	mNumbers.clear();
+	mTileTextures.clear();
+
 }
 
 void GameBoard::Update(const float deltaTime)
@@ -186,30 +189,40 @@ void GameBoard::GenerateGraph(std::vector<BoardTile*> tiles) {
 					if ((static_cast<int>(e->gridPosition.x) == row - 32 || static_cast<int>(e->gridPosition.x) == row + 32)
 						&& (static_cast<int>(e->gridPosition.y) == col - 32 || static_cast<int>(e->gridPosition.y) == col + 32))
 					{
-						mBoardGraph[tile->id].push_back(e);
+						
 						if (e->mine)
 						{
 							tile->numAdjacentMines++;
+						}
+						else
+						{
+							mBoardGraph[tile->id].push_back(e);
 						}
 					}
 					// vertical
 					if ((static_cast<int>(e->gridPosition.x) == row)
 						&& (static_cast<int>(e->gridPosition.y) == col - 32 || static_cast<int>(e->gridPosition.y) == col + 32))
 					{
-						mBoardGraph[tile->id].push_back(e);
 						if (e->mine)
 						{
 							tile->numAdjacentMines++;
+						}
+						else
+						{
+							mBoardGraph[tile->id].push_back(e);
 						}
 					}
 					// horizontal
 					if ((static_cast<int>(e->gridPosition.x) == row - 32 || static_cast<int>(e->gridPosition.x) == row + 32)
 						&& (static_cast<int>(e->gridPosition.y) == col))
 					{
-						mBoardGraph[tile->id].push_back(e);
 						if (e->mine)
 						{
 							tile->numAdjacentMines++;
+						}
+						else
+						{
+							mBoardGraph[tile->id].push_back(e);
 						}
 					}
 				}
@@ -228,34 +241,22 @@ void GameBoard::ClearSpace(BoardTile* t)
 {
 	if (t->numAdjacentMines != 0 || t->mine) return;
 
-	std::stack<BoardTile*> unvisited;
+	std::queue<BoardTile*> unvisited;
+	unvisited.push(t);
 
-	for (auto& tile : mBoardGraph[t->id])
-	{
-		if (!tile->clicked && !tile->mine)
-		{
-			tile->clicked = true;
-			tile->tileTexture = mTileTextures["Clicked"];
-			unvisited.push(tile);
-		}
-	}
 	while (!unvisited.empty())
 	{
-
-		std::vector<BoardTile*> adjTiles = mBoardGraph[unvisited.top()->id];
-		if (unvisited.top()->numAdjacentMines > 0)
+		int curId = unvisited.front()->id;
+		unvisited.pop();
+		for (auto& tile : mBoardGraph[curId])
 		{
-			unvisited.pop();
-		}
-		else
-		{
-			unvisited.pop();
-			for (auto& tile : adjTiles)
+			if (!tile->clicked)
 			{
-				if (!tile->clicked && !tile->mine)
+				tile->clicked = true;
+				tile->tileTexture = mTileTextures["Clicked"];
+				if (!tile->numberTexture)
 				{
-					tile->clicked = true;
-					tile->tileTexture = mTileTextures["Clicked"];
+					SDL_Log("Number of adjacent mines: %d\n at tile: %d", tile->numAdjacentMines, tile->id);
 					unvisited.push(tile);
 				}
 			}
@@ -271,7 +272,7 @@ void GameBoard::ResetGame(const int mines, const Vector2 dims)
 	}
 
 	mBoardTiles.clear();
-
+	mBoardGraph.clear();
 	mNumMines = mines;
 	mGridSize = dims;
 	mState = InProgress;
