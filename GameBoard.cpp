@@ -256,7 +256,6 @@ void GameBoard::ClearSpace(BoardTile* t)
 				tile->tileTexture = mTileTextures["Clicked"];
 				if (!tile->numberTexture)
 				{
-					SDL_Log("Number of adjacent mines: %d\n at tile: %d", tile->numAdjacentMines, tile->id);
 					unvisited.push(tile);
 				}
 			}

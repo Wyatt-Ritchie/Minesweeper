@@ -79,24 +79,23 @@ void GameUI::GenerateButtons()
 
 void GameUI::ButtonResetGame()
 {
-	SDL_Log("Clicked");
 	if (mState == Easy)
 	{
-		mGameBoard->ResetGame(10, Vector2(9.0, 9.0));
+		mGameBoard->ResetGame(13, Vector2(9.0, 9.0));
 		mHeaderDims.x = (9 * 32);
 		mHeaderDims.y = (2 * 32);
 		mButtons[0]->SetPosition(Vector2((9 * 32) / 2, mHeaderDims.y - 32));
 	}
 	if (mState == Medium)
 	{
-		mGameBoard->ResetGame(25, Vector2(15.0, 15.0));
+		mGameBoard->ResetGame(30, Vector2(15.0, 15.0));
 		mHeaderDims.x = (15 * 32);
 		mHeaderDims.y = (2 * 32);
 		mButtons[0]->SetPosition(Vector2((15 * 32) / 2, mHeaderDims.y - 32));
 	}
 	if (mState == Hard)
 	{
-		mGameBoard->ResetGame(50, Vector2(18.0, 18.0));
+		mGameBoard->ResetGame(60, Vector2(18.0, 18.0));
 		mHeaderDims.x = (18 * 32);
 		mHeaderDims.y = (2 * 32);
 		mButtons[0]->SetPosition(Vector2((18 * 32) / 2, mHeaderDims.y - 32));
