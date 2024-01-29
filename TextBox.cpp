@@ -111,7 +111,7 @@ void TextBox::Draw(SDL_Renderer* renderer)
 		x += mTexWidth + 5;  // Add some spacing between words
 		
 		// Free resources
-		SDL_DestroyTexture(mTexture);
+		//SDL_DestroyTexture(mTexture);
 	}
 }
 

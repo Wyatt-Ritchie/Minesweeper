@@ -179,8 +179,8 @@ void GameBoard::GenerateGraph(std::vector<BoardTile*> tiles) {
 		{ // Consider only tiles with mine=false
 			// Add the adjacent tiles to the adjacency list
 			int row, col;
-			row = tile->gridPosition.x;
-			col = tile->gridPosition.y;
+			row = static_cast<int>(tile->gridPosition.x);
+			col = static_cast<int>(tile->gridPosition.y);
 			for (auto& e : mBoardTiles)
 			{
 				if (!(tile == e))
@@ -273,6 +273,7 @@ void GameBoard::ResetGame(const int mines, const Vector2 dims)
 	mBoardTiles.clear();
 	mBoardGraph.clear();
 	mNumMines = mines;
+	mNumFlags = 0;
 	mGridSize = dims;
 	mState = InProgress;
 	SetUpBoard();
@@ -335,14 +336,20 @@ void GameBoard::HandleKeyPress(const int key)
 						mNumFlags--;
 					}
 					else
-					{
+					{	
+						if (mNumFlags >= mNumMines) break;
 						t->flagged = true;
 						t->flagTexture = mFlag;
 						mNumFlags++;
 					}
 					break;
 				}
-				
+				if (t->highlighted && t->flagged)
+				{
+					t->flagged = false;
+					t->flagTexture = nullptr;
+					mNumFlags--;
+				}
 			}
 		}
 	default:
@@ -355,8 +362,8 @@ void GameBoard::HandleKeyPress(const int key)
 void GameBoard::SetUpBoard()
 {
 	int rows, cols, id;
-	rows = mGridSize.x;
-	cols = mGridSize.y;
+	rows = static_cast<int>(mGridSize.x);
+	cols = static_cast<int>(mGridSize.y);
 	id = 0;
 	for (int i = 0; i < rows; i++)
 	{

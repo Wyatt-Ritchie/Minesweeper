@@ -58,6 +58,8 @@ public:
 
 	void SetPosition(Vector2 vec) { mPosition = vec; }
 
+	int GetFlaggedCount() const { return mNumMines - mNumFlags; }
+
 	Vector2 GetPosition() const { return mPosition; }
 
 private:

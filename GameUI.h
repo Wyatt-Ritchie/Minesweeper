@@ -24,10 +24,13 @@ public:
 	void SetState(State state);
 
 	void SetHeaderDims(Vector2 dims) { mHeaderDims = dims; }
+	void SetFlaggedCountPos();
 
 private:
 	State mState;
 	Vector2 mHeaderDims;
+	Vector2 mNumberPos;
+	SDL_Texture* mFlaggedCount;
 
 	class GameBoard* mGameBoard;
 };
