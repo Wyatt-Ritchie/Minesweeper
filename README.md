@@ -1,5 +1,8 @@
 # Classic Minesweeper in my 2d Engine
-
+<div>
+      <img src="https://github.com/Wyatt-Ritchie/Minesweeper/blob/master/README_images/Minesweeper_example.PNG" alt="Minesweeper In Progress" width="350"/>
+      <img src="https://github.com/Wyatt-Ritchie/Minesweeper/blob/master/README_images/Minesweeper_example_2.PNG" alt="Minesweeper Lost" width="350"/>
+</div>
 
 <br>
 This is just a quick project I wanted to work on to test some AI pathfinding algorithms. My initial idea is to use Breadth First Search algorithm for clearing sections of the board. Since the idea is that we want to check each tile and determine if it is adjacent to a mine or not. Breadth First Search algorithm should be ideal since that algorithm checks all possible paths. 
