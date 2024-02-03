@@ -10,6 +10,7 @@ GameBoard::GameBoard(Game* game, int numMines, Vector2 GridSize) : mGame(game)
 																  ,mGridSize(GridSize)
 																  ,mPosition(Vector2(0.0f,0.0f))
 																  ,mBoardGraph()
+																  ,mFlagChange(true)
 {
 	mMine = mGame->GetTexture("Assets/Mine.png");
 	mFlag = mGame->GetTexture("Assets/Flag.png");
@@ -334,6 +335,7 @@ void GameBoard::HandleKeyPress(const int key)
 						t->flagged = false;
 						t->flagTexture = nullptr;
 						mNumFlags--;
+						SetFlagChange(true);
 					}
 					else
 					{	
@@ -341,6 +343,7 @@ void GameBoard::HandleKeyPress(const int key)
 						t->flagged = true;
 						t->flagTexture = mFlag;
 						mNumFlags++;
+						SetFlagChange(true);
 					}
 					break;
 				}
@@ -349,6 +352,7 @@ void GameBoard::HandleKeyPress(const int key)
 					t->flagged = false;
 					t->flagTexture = nullptr;
 					mNumFlags--;
+					SetFlagChange(true);
 				}
 			}
 		}

@@ -57,7 +57,13 @@ void GameUI::Draw(SDL_Renderer* renderer)
 	int offset = 0;
 	if (num < 10) offset = 20;
 	std::string numToRender = std::to_string(num);
-	mFlaggedCount = mFont->RenderText(numToRender, Color::Red, size);
+	if (mGameBoard->RequiresUpdate())
+	{
+		if(mFlaggedCount) SDL_DestroyTexture(mFlaggedCount);
+		mGameBoard->SetFlagChange(false);
+		mFlaggedCount = mFont->RenderText(numToRender, Color::Red, size);
+	}
+	
 	SDL_Rect textDest{ numRegion.x + offset, numRegion.y, 1, 1 };
 	SDL_QueryTexture(mFlaggedCount, NULL, NULL, &textDest.w, &textDest.h);
 	SDL_RenderCopyEx(renderer,
@@ -142,6 +148,7 @@ void GameUI::SetEasy()
 	SetHeaderDims(Vector2(dims.y * 32, 2 * 32));
 	SetState(GameUI::Easy);
 	SetFlaggedCountPos();
+	mGameBoard->SetFlagChange(true);
 }
 
 void GameUI::SetMedium()
@@ -150,6 +157,7 @@ void GameUI::SetMedium()
 	SetState(GameUI::Medium);
 	SetHeaderDims(Vector2(dims.x * 32, 2 * 32));
 	SetFlaggedCountPos();
+	mGameBoard->SetFlagChange(true);
 }
 
 void GameUI::SetHard()
@@ -158,6 +166,7 @@ void GameUI::SetHard()
 	SetState(GameUI::Hard);
 	SetHeaderDims(Vector2(dims.y * 32, 2 * 32));
 	SetFlaggedCountPos();
+	mGameBoard->SetFlagChange(true);
 }
 
 void GameUI::SetFlaggedCountPos()

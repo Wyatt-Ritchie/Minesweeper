@@ -56,6 +56,9 @@ public:
 
 	void printAdjacencyList();
 
+	bool RequiresUpdate() const { return mFlagChange; }
+	void SetFlagChange(bool changed) { mFlagChange = changed; }
+
 	void SetPosition(Vector2 vec) { mPosition = vec; }
 
 	int GetFlaggedCount() const { return mNumMines - mNumFlags; }
@@ -66,6 +69,8 @@ private:
 
 	State mState;
 	class Game* mGame;
+
+	bool mFlagChange;
 
 	// map containing the textures for the tiles. 
 	// There are 3 tile textures; Unclicked, Unclicked_Hover, Clicked and Explosion
